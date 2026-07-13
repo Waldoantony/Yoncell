@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yoncell — Tableau de bord</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --purple:#3b1550;
+  --purple-dark:#26102f;
+  --coral:#e8622f;
+  --pink:#ec1567;
+  --pink-dark:#c00e54;
+  --ink:#20112c;
+  --muted:#6c6275;
+  --line:#eae1e6;
+  --bg:#f8f5f7;
+  --ok:#1f9d55;
+  --ok-bg:#e6f7ec;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--bg)}
+h1,h2,h3{font-family:'Manrope',sans-serif}
+button{font:inherit;cursor:pointer;border:0}
+input,select,textarea{font:inherit}
+.hidden{display:none !important}
+
+/* ---------- Login ---------- */
+.login-screen{min-height:100dvh;display:grid;place-items:center;padding:24px;background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%)}
+.login-card{background:#fff;border-radius:16px;padding:32px 26px;width:min(360px,100%);box-shadow:0 20px 50px #00000030}
+.login-card .lg{font:800 22px Manrope;color:var(--purple);margin:0 0 4px;display:flex;align-items:center;gap:4px}
+.login-card .lg .pink{color:var(--pink)}
+.login-card p.sub{color:var(--muted);font-size:13px;margin:0 0 22px}
+.field{display:grid;gap:6px;margin-bottom:14px}
+.field label{font:700 11.5px Manrope;color:var(--purple)}
+.field input,.field select,.field textarea{padding:12px;border:1px solid #ddd2e0;border-radius:8px;font-size:14px;width:100%}
+.field textarea{resize:vertical;min-height:70px}
+.btn{border-radius:9px;padding:13px 18px;font:700 13.5px Manrope;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary{background:var(--pink);color:#fff;width:100%}
+.btn-primary:disabled{opacity:.5}
+.btn-ghost{background:#f3edf5;color:var(--purple)}
+.btn-danger{background:#fde5ea;color:#c0143c}
+.error-msg{background:#fde5ea;color:#c0143c;border-radius:8px;padding:10px 12px;font-size:12.5px;margin-bottom:14px}
+
+/* ---------- Dashboard ---------- */
+.dash{max-width:900px;margin:0 auto;padding:20px 16px 60px}
+.dash-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.dash-top .lg{font:800 20px Manrope;color:var(--purple);display:flex;align-items:center;gap:4px}
+.dash-top .lg .pink{color:var(--pink)}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:24px}
+.panel h2{font-size:17px;margin:0 0 4px;color:var(--purple)}
+.panel .hint{color:var(--muted);font-size:12.5px;margin:0 0 18px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:600px){.grid-2{grid-template-columns:1fr}}
+.checks-row{display:flex;gap:22px;align-items:center;margin:4px 0 18px}
+.checks-row label{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--purple)}
+.checks-row input{width:16px;height:16px}
+.photo-row{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px}
+.photo-preview{width:76px;height:76px;border-radius:10px;background:#f3edf5;object-fit:cover;flex-shrink:0;border:1px solid var(--line)}
+.form-actions{display:flex;gap:10px;margin-top:6px}
+.upload-status{font-size:12px;color:var(--muted);margin-top:6px}
+
+.list-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.list-head h2{margin:0}
+.search{padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:13px;width:180px}
+.prow{display:flex;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid #f1eaee}
+.prow:last-child{border-bottom:0}
+.prow img{width:52px;height:58px;object-fit:cover;border-radius:7px;background:#f3edf5;flex-shrink:0}
+.prow .info{flex:1;min-width:0}
+.prow .info b{display:block;font:700 13.5px Manrope}
+.prow .info .meta{font-size:11.5px;color:var(--muted)}
+.badge{display:inline-block;font-size:9.5px;font-weight:800;padding:3px 8px;border-radius:12px;margin-top:3px}
+.badge.in{background:var(--ok-bg);color:var(--ok)}
+.badge.out{background:#f0eef0;color:#7a7280}
+.badge.pop{background:#ffe3ee;color:var(--pink-dark);margin-left:5px}
+.prow .price{font:800 14px Manrope;color:var(--purple);white-space:nowrap}
+.prow .actions{display:flex;gap:6px;flex-shrink:0}
+.icon-btn{width:34px;height:34px;border-radius:8px;background:#f3edf5;color:var(--purple);display:grid;place-items:center}
+.icon-btn.danger{background:#fde5ea;color:#c0143c}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--purple);color:#fff;padding:12px 20px;border-radius:10px;font:700 13px Manrope;box-shadow:0 10px 25px #00000030;z-index:99;opacity:0;transition:.25s;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-6px)}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="lg"><span>Yon</span><span class="pink">Cell</span></div>
+    <p class="sub">Tableau de bord — accès réservé à l'équipe Yoncell.</p>
+    <div id="loginError" class="error-msg hidden"></div>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="loginEmail" placeholder="vous@yoncell.com" autocomplete="username">
+    </div>
+    <div class="field">
+      <label>Mot de passe</label>
+      <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary" id="loginBtn">Se connecter</button>
+  </div>
+</div>
+
+<!-- ================= DASHBOARD ================= -->
+<div class="dash hidden" id="dashScreen">
+  <div class="dash-top">
+    <div class="lg"><span>Yon</span><span class="pink">Cell</span> — Tableau de bord</div>
+    <button class="btn btn-ghost" id="logoutBtn">Déconnexion</button>
+  </div>
+
+  <div class="panel">
+    <h2 id="formTitle">Ajouter un téléphone</h2>
+    <p class="hint">Remplissez les informations et ajoutez une photo. Le produit apparaît sur le site instantanément.</p>
+
+    <div class="grid-2">
+      <div class="field">
+        <label>Catégorie</label>
+        <select id="fCategory">
+          <option value="iPhone">iPhone</option>
+          <option value="Samsung">Samsung</option>
+          <option value="Android">Android (autre)</option>
+          <option value="Accessories">Accessoires</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Marque</label>
+        <input id="fBrand" placeholder="Apple, Samsung, Google...">
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label>Modèle</label>
+        <input id="fModel" placeholder="iPhone 15 Pro">
+      </div>
+      <div class="field">
+        <label>Prix (USD)</label>
+        <input id="fPrice" type="number" min="0" step="1" placeholder="999">
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label>Stockage</label>
+        <input id="fStorage" placeholder="256GB">
+      </div>
+      <div class="field">
+        <label>RAM</label>
+        <input id="fRam" placeholder="8GB (ou — si N/A)">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Caractéristiques (une par ligne)</label>
+      <textarea id="fDetails" placeholder="Écran Super Retina XDR&#10;Puce A17 Pro&#10;USB-C"></textarea>
+    </div>
+
+    <div class="checks-row">
+      <label><input type="checkbox" id="fAvailable" checked> En stock</label>
+      <label><input type="checkbox" id="fPopular"> Mettre en Produits Populaires</label>
+    </div>
+
+    <div class="field">
+      <label>Photo</label>
+      <div class="photo-row">
+        <img id="photoPreview" class="photo-preview" src="" alt="">
+        <div style="flex:1">
+          <input type="file" id="fPhotoFile" accept="image/*">
+          <div class="upload-status" id="uploadStatus"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-primary" id="saveBtn" style="width:auto">Ajouter le produit</button>
+      <button class="btn btn-ghost hidden" id="cancelEditBtn">Annuler</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="list-head">
+      <h2>Produits (<span id="prodCount">0</span>)</h2>
+      <input class="search" id="searchBox" placeholder="Rechercher...">
+    </div>
+    <div id="prodList"><p class="empty-state">Chargement...</p></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getStorage, ref, uploadBytes, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+import { firebaseConfig } from './firebase-config.js';
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+let products = [];
+let editingId = null;
+let pendingPhotoURL = null;
+
+// ---------- Auth ----------
+const loginScreen = document.getElementById('loginScreen');
+const dashScreen = document.getElementById('dashScreen');
+const loginError = document.getElementById('loginError');
+
+document.getElementById('loginBtn').onclick = async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  loginError.classList.add('hidden');
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (err) {
+    loginError.textContent = "Email ou mot de passe incorrect.";
+    loginError.classList.remove('hidden');
+  }
+};
+
+document.getElementById('logoutBtn').onclick = () => signOut(auth);
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    loginScreen.classList.add('hidden');
+    dashScreen.classList.remove('hidden');
+    startProductListener();
+  } else {
+    dashScreen.classList.add('hidden');
+    loginScreen.classList.remove('hidden');
+  }
+});
+
+// ---------- Live product list ----------
+let unsubscribe = null;
+function startProductListener(){
+  if (unsubscribe) return;
+  unsubscribe = onSnapshot(query(collection(db, 'products'), orderBy('model')), snap => {
+    products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderList();
+  });
+}
+
+function money(v){ return `$${Number(v).toLocaleString('en-US')}`; }
+
+function renderList(filter=''){
+  const list = document.getElementById('prodList');
+  const term = filter.trim().toLowerCase();
+  const filtered = products.filter(p =>
+    !term || `${p.brand} ${p.model} ${p.category}`.toLowerCase().includes(term)
+  );
+  document.getElementById('prodCount').textContent = products.length;
+
+  if (!filtered.length){
+    list.innerHTML = `<p class="empty-state">Aucun produit${term ? ' trouvé' : ' pour le moment — ajoutez-en un ci-dessus'}.</p>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(p => `
+    <div class="prow">
+      <img src="${p.photo || ''}" alt="">
+      <div class="info">
+        <b>${p.brand} ${p.model}</b>
+        <div class="meta">${p.category} · ${p.storage || '—'} · ${money(p.price)}</div>
+        <span class="badge ${p.available ? 'in' : 'out'}">${p.available ? 'En stock' : 'Indisponible'}</span>
+        ${p.popular ? '<span class="badge pop">Populaire</span>' : ''}
+      </div>
+      <div class="actions">
+        <button class="icon-btn" data-edit="${p.id}" title="Modifier">✎</button>
+        <button class="icon-btn danger" data-del="${p.id}" title="Supprimer">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('searchBox').oninput = e => renderList(e.target.value);
+
+document.getElementById('prodList').addEventListener('click', e => {
+  const editBtn = e.target.closest('[data-edit]');
+  if (editBtn){ startEdit(editBtn.dataset.edit); return; }
+  const delBtn = e.target.closest('[data-del]');
+  if (delBtn){ removeProduct(delBtn.dataset.del); return; }
+});
+
+// ---------- Form ----------
+const form = {
+  category: document.getElementById('fCategory'),
+  brand: document.getElementById('fBrand'),
+  model: document.getElementById('fModel'),
+  price: document.getElementById('fPrice'),
+  storage: document.getElementById('fStorage'),
+  ram: document.getElementById('fRam'),
+  details: document.getElementById('fDetails'),
+  available: document.getElementById('fAvailable'),
+  popular: document.getElementById('fPopular'),
+  photoFile: document.getElementById('fPhotoFile'),
+};
+const photoPreview = document.getElementById('photoPreview');
+const uploadStatus = document.getElementById('uploadStatus');
+const saveBtn = document.getElementById('saveBtn');
+const cancelEditBtn = document.getElementById('cancelEditBtn');
+const formTitle = document.getElementById('formTitle');
+
+form.photoFile.onchange = () => {
+  const file = form.photoFile.files[0];
+  if (file) photoPreview.src = URL.createObjectURL(file);
+};
+
+function resetForm(){
+  editingId = null;
+  pendingPhotoURL = null;
+  form.category.value = 'iPhone';
+  form.brand.value = '';
+  form.model.value = '';
+  form.price.value = '';
+  form.storage.value = '';
+  form.ram.value = '';
+  form.details.value = '';
+  form.available.checked = true;
+  form.popular.checked = false;
+  form.photoFile.value = '';
+  photoPreview.src = '';
+  uploadStatus.textContent = '';
+  saveBtn.textContent = 'Ajouter le produit';
+  formTitle.textContent = 'Ajouter un téléphone';
+  cancelEditBtn.classList.add('hidden');
+}
+
+function startEdit(id){
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  editingId = id;
+  pendingPhotoURL = p.photo || null;
+  form.category.value = p.category || 'iPhone';
+  form.brand.value = p.brand || '';
+  form.model.value = p.model || '';
+  form.price.value = p.price ?? '';
+  form.storage.value = p.storage || '';
+  form.ram.value = p.ram || '';
+  form.details.value = (p.details || []).join('\n');
+  form.available.checked = !!p.available;
+  form.popular.checked = !!p.popular;
+  form.photoFile.value = '';
+  photoPreview.src = p.photo || '';
+  uploadStatus.textContent = '';
+  saveBtn.textContent = 'Enregistrer les modifications';
+  formTitle.textContent = 'Modifier le téléphone';
+  cancelEditBtn.classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+cancelEditBtn.onclick = resetForm;
+
+async function removeProduct(id){
+  if (!confirm('Supprimer ce produit ? Cette action est définitive.')) return;
+  try {
+    await deleteDoc(doc(db, 'products', id));
+    showToast('Produit supprimé');
+    if (editingId === id) resetForm();
+  } catch (err) {
+    showToast('Erreur lors de la suppression');
+    console.error(err);
+  }
+}
+
+saveBtn.onclick = async () => {
+  const brand = form.brand.value.trim();
+  const model = form.model.value.trim();
+  const price = Number(form.price.value);
+
+  if (!brand || !model || !price){
+    showToast('Marque, modèle et prix sont obligatoires');
+    return;
+  }
+
+  saveBtn.disabled = true;
+  const originalLabel = saveBtn.textContent;
+  saveBtn.textContent = 'Enregistrement...';
+
+  try {
+    let photoURL = pendingPhotoURL;
+    const file = form.photoFile.files[0];
+    if (file){
+      uploadStatus.textContent = 'Téléversement de la photo...';
+      const path = `products/${Date.now()}-${file.name}`;
+      const storageRef = ref(storage, path);
+      await uploadBytes(storageRef, file);
+      photoURL = await getDownloadURL(storageRef);
+      uploadStatus.textContent = 'Photo téléversée ✓';
+    }
+
+    const data = {
+      category: form.category.value,
+      brand,
+      model,
+      price,
+      storage: form.storage.value.trim(),
+      ram: form.ram.value.trim(),
+      details: form.details.value.split('\n').map(s => s.trim()).filter(Boolean),
+      available: form.available.checked,
+      popular: form.popular.checked,
+      photo: photoURL || '',
+    };
+
+    if (editingId){
+      await updateDoc(doc(db, 'products', editingId), data);
+      showToast('Produit mis à jour');
+    } else {
+      await addDoc(collection(db, 'products'), data);
+      showToast('Produit ajouté');
+    }
+    resetForm();
+  } catch (err) {
+    showToast('Erreur — vérifiez la configuration Firebase');
+    console.error(err);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = originalLabel;
+  }
+};
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+</script>
+</body>
+</html>
