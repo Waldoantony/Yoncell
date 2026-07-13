@@ -11,10 +11,10 @@
 // ============================================================
 
 export const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  apiKey: "AIzaSyDWid1jeTW9pxifsSFbkuAGaQKKeiNGoLI",
+  authDomain: "yoncell-a1d6a.firebaseapp.com",
   projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  storageBucket: "yoncell-a1d6a",
+  messagingSenderId: "426430357533",
+  appId: "1:426430357533:web:82740951571f8ce977e6f4"
 };
