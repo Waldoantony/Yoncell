@@ -13,8 +13,8 @@
 export const firebaseConfig = {
   apiKey: "AIzaSyDWid1jeTW9pxifsSFbkuAGaQKKeiNGoLI",
   authDomain: "yoncell-a1d6a.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "yoncell-a1d6a",
+  projectId: "yoncell-a1d6a",
+  storageBucket: "yoncell-a1d6a.firebasestorage.app",
   messagingSenderId: "426430357533",
   appId: "1:426430357533:web:82740951571f8ce977e6f4"
 };
